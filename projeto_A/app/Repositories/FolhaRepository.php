@@ -1,13 +1,13 @@
 <?php
 
 namespace App\Repositories;
-use App\Models\Pedido;
+use App\Models\Folha;
 
-class PedidoRepository
+class FolhaRepository
 {
     public function __construct()
     {
-        $this->model = Pedido::class;
+        $this->model = Folha::class;
     }
 
     public function listar()

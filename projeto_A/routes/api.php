@@ -1,5 +1,6 @@
 <?php
-use App\Http\Controllers\PedidoController;
+use App\Http\Controllers\FuncionarioController;
+use App\Http\Controllers\FolhaController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -17,7 +18,13 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
-Route::prefix('pedido')->group(function () {
-    Route::get('/', [PedidoController::class, 'listarPedidos']);
-    Route::post('/', [PedidoController::class, 'cadastrarPedido']);
+Route::prefix('funcionario')->group(function () {
+    Route::get('/', [FuncionarioController::class, 'listarFuncionarios']);
+    Route::post('/', [FuncionarioController::class, 'cadastrarFuncionarios']);
+});
+
+Route::prefix('folha')->group(function () {
+    Route::get('/', [FolhaController::class, 'listarFolhas']);
+    Route::get('/calcular', [FolhaController::class, 'calcularFolhas']);
+    Route::post('/', [FolhaController::class, 'cadastrarFolhas']);
 });
