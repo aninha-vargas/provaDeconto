@@ -23,8 +23,8 @@ class FolhaService
     {
         // dd('teste');
         $response = Http::asForm()->post('http://127.0.0.1:9000/api/folha/calcular');
-        $body = (json_decode($response->body()))->token;
-        dd($body);
+        $body = (json_decode($response));
+        dd($response);
         return $this->folhaRepository->criar($dados);
     }
 
