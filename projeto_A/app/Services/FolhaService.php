@@ -2,7 +2,9 @@
 
 namespace App\Services;
 
+use Exception;
 use App\Repositories\FolhaRepository;
+use Illuminate\Support\Facades\DB;
 
 class FolhaService
 {
@@ -25,20 +27,44 @@ class FolhaService
 
     public function calcularFolhas()
     {
-        $folhas = $this->listarFolhas();
-        foreach ($folhas as $folha) {
-            if(!$folha->enviada){
-                $salario = $folha["horas"] * $folha["valor"];
-                $ir = $this->calcularIr($folha);
-                $inss = $this->calcularInss($folha);
-                $fgts = $salario * 0.08;
-                $salarioLiquido = $salario - $ir - $inss;
+        try {
+            DB::beginTransaction();
+
+            $folhas = $this->listarFolhas();
+            $retorno = [];
+            foreach ($folhas as $folha) {
+                if(!$folha->enviada){
+                    $salario = $folha["horas"] * $folha["valor"];
+                    $ir = $this->calcularIr($folha);
+                    $inss = $this->calcularInss($folha);
+                    $fgts = $salario * 0.08;
+                    $salarioLiquido = $salario - $ir - $inss;
+                } else {
+                    return throw new Exception("Sem folha para calcular.");
+                }
+                $dado = ["enviada" => 1];
+                $folhaAlterada = $this->folhaRepository->atualizar($folha['id'], $dado);
+                $retorno[] = [$folha['id'], $salarioLiquido];
             }
-            $dado = ["enviada" => 1];
-            $folhaAlterada = $this->folhaRepository->atualizar($folha['id'], $dado);
-            $retorno[] = [$folha['id'], $salarioLiquido];
+            if($retorno){
+                DB::commit();
+                    return array(
+                        "status" => true,
+                        "mensagem" => "Folha exportada com sucesso",
+                        "dados" => $retorno
+                    );
+            } else {
+
+            }
+        } catch (Exception $ex) {
+            DB::rollBack();
+            return array(
+                'status' => false,
+                // 'mensagem' => "Erro ao salvar avaliação",
+                'mensagem' => $ex->getMessage(),
+                'dados' => [],
+            );
         }
-        return $retorno;
     }
 
     private function calcularIr($dados)

@@ -17,6 +17,7 @@ class FolhaRepository
 
     public function criar($dados)
     {
+        dd('aqui', $dados);
         return $this->model::create($dados);
     }
 
