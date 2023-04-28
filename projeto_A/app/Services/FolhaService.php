@@ -34,7 +34,8 @@ class FolhaService
                 $fgts = $salario * 0.08;
                 $salarioLiquido = $salario - $ir - $inss;
             }
-            $folhaAlterada = $this->folhaRepository->atualizar($folha['id'], [$folha['enviada']]);
+            $dado = ["enviada" => 1];
+            $folhaAlterada = $this->folhaRepository->atualizar($folha['id'], $dado);
             $retorno[] = [$folha['id'], $salarioLiquido];
         }
         return $retorno;
